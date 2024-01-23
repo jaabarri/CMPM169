@@ -1,67 +1,103 @@
-// sketch.js - purpose and description here
-// Author: Your Name
-// Date:
+let shapes = ['circle', 'rectangle', 'ellipse'];
+let drawing = true;
+let drawnShapes = [];
 
-// Here is how you might set up an OOP p5.js project
-// Note that p5.js looks for a file called sketch.js
-
-// Constants - User-servicable parts
-// In a longer project I like to put these in a separate file
-const VALUE1 = 1;
-const VALUE2 = 2;
-
-// Globals
-let myInstance;
-let canvasContainer;
-
-class MyClass {
-    constructor(param1, param2) {
-        this.property1 = param1;
-        this.property2 = param2;
-    }
-
-    myMethod() {
-        // code to run when method is called
-    }
-}
-
-// setup() function is called once when the program starts
 function setup() {
-    // place our canvas, making it fit our container
-    canvasContainer = $("#canvas-container");
-    let canvas = createCanvas(canvasContainer.width(), canvasContainer.height());
-    canvas.parent("canvas-container");
-    // resize canvas is the page is resized
-    $(window).resize(function() {
-        console.log("Resizing...");
-        resizeCanvas(canvasContainer.width(), canvasContainer.height());
-    });
-    // create an instance of the class
-    myInstance = new MyClass(VALUE1, VALUE2);
-
-    var centerHorz = windowWidth / 2;
-    var centerVert = windowHeight / 2;
+  createCanvas(800, 600);
 }
 
-// draw() function is called repeatedly, it's the main animation loop
 function draw() {
-    background(220);    
-    // call a method on the instance
-    myInstance.myMethod();
+  background(220);
 
-    // Put drawings here
-    var centerHorz = canvasContainer.width() / 2 - 125;
-    var centerVert = canvasContainer.height() / 2 - 125;
-    fill(234, 31, 81);
+  // Draw the stored shapes
+  for (let i = 0; i < drawnShapes.length; i++) {
+    let shape = drawnShapes[i];
+    fill(shape.fillColor);
     noStroke();
-    rect(centerHorz, centerVert, 250, 250);
-    fill(255);
-    textStyle(BOLD);
-    textSize(140);
-    text("p5*", centerHorz + 10, centerVert + 200);
+
+    push(); // Save the current transformation state
+    translate(shape.x || 0, shape.y || 0); // Add default values for x and y
+
+    if (drawing) {
+      // Add rotation animation when drawing
+      rotate(frameCount * 0.01);
+    }
+
+    if (shape.type === 'circle') {
+      ellipse(0, 0, shape.width, shape.height);
+    } else if (shape.type === 'rectangle') {
+      rect(0, 0, shape.width, shape.height);
+    } else if (shape.type === 'ellipse') {
+      ellipse(0, 0, shape.width, shape.height);
+    }
+
+    pop(); // Restore the previous transformation state
+  }
+
+  if (drawing) {
+    // Generate and draw a random shape
+    let randomShape = random(shapes);
+    let shape;
+
+    if (randomShape === 'circle') {
+      shape = drawCircle();
+    } else if (randomShape === 'rectangle') {
+      shape = drawRectangle();
+    } else if (randomShape === 'ellipse') {
+      shape = drawEllipse();
+    }
+
+    // Store the shape's attributes in the array
+    drawnShapes.push(shape);
+  }
 }
 
-// mousePressed() function is called once after every time a mouse button is pressed
+function drawCircle() {
+  let x = random(width);
+  let y = random(height);
+  let diameter = random(20, 100);
+  let fillColor = color(random(255), random(255), random(255), 150);
+
+  fill(fillColor);
+  noStroke();
+  ellipse(x, y, diameter, diameter);
+
+  return { type: 'circle', x, y, width: diameter, height: diameter, fillColor };
+}
+
+function drawRectangle() {
+  let x = random(width);
+  let y = random(height);
+  let rectWidth = random(20, 100);
+  let rectHeight = random(20, 100);
+  let fillColor = color(random(255), random(255), random(255), 150);
+
+  fill(fillColor);
+  noStroke();
+  rect(x, y, rectWidth, rectHeight);
+
+  return { type: 'rectangle', x, y, width: rectWidth, height: rectHeight, fillColor };
+}
+
+function drawEllipse() {
+  let x = random(width);
+  let y = random(height);
+  let ellipseWidth = random(20, 100);
+  let ellipseHeight = random(20, 100);
+  let fillColor = color(random(255), random(255), random(255), 150);
+
+  fill(fillColor);
+  noStroke();
+  ellipse(x, y, ellipseWidth, ellipseHeight);
+
+  return { type: 'ellipse', x, y, width: ellipseWidth, height: ellipseHeight, fillColor };
+}
+
 function mousePressed() {
-    // code to run when mouse is pressed
+  // Toggle drawing on/off when the mouse is pressed
+  if (drawing) {
+    drawing = false;
+  } else {
+    drawing = true;
+  }
 }
